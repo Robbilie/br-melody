@@ -1,0 +1,28 @@
+<div>
+	<div>
+		<button ref="{{ addSourceButton }}">+</button>
+		<button ref="{{ analyzeButton }}">Analyze</button>
+		{% for source in sources %}
+			<div data-key="{{ source.index }}">
+				<select ref="{{ sourceAttribute }}" data-name="type" value="{{ source.type }}">
+					<option value="system">System</option>
+					<option value="constellation">Constellation</option>
+					<option value="region">Region</option>
+				</select>
+				<input ref="{{ sourceAttribute }}" type="text" data-name="value" value="{{ source.value }}" />
+				<input ref="{{ sourceAttribute }}" type="datetime-local" data-name="start" value="{{ source.start }}" />
+				<input ref="{{ sourceAttribute }}" type="datetime-local" data-name="end" value="{{ source.end }}" />
+				<button ref="{{ removeSourceButton }}">&times;</button>
+			</div>
+		{% endfor %}
+	</div>
+	<div>
+		{% for team in teams %}
+			<ul>
+				{% for team_member in team %}
+					<li data-key="{{ team_member }}"><button ref="{{ moveTeamLeftButton }}">&lt;</button>{{ team_member }}<button ref="{{ moveTeamRightButton }}">&gt;</button></li>
+				{% endfor %}
+			</ul>
+		{% endfor %}
+	</div>
+</div>
