@@ -78,63 +78,51 @@ const stateReducer = (state = initialState, action) => {
       };
   }
   return state;
-}
+};
 
 ////////// METHODS //////////
 
-  async function load (sources) {
-    return [].concat(...(await Promise.all(sources.map(source => loadSource(source)))));
-  }
+const load = sources => [].concat(...(await Promise.all(sources.map(source => loadSource(source)))));
 
-  function loadSource ({ type, value, start, end }) {
-    return loadKillmails({ type, id: value, start: start.replace(/-|:|T/g, "").slice(0, 10) + "00", end: end.replace(/-|:|T/g, "").slice(0, 10) + "00" });
-  }
+const loadSource = ({ type, value, start, end }) => loadKillmails({ type, id: value, start: start.replace(/-|:|T/g, "").slice(0, 10) + "00", end: end.replace(/-|:|T/g, "").slice(0, 10) + "00" });
 
-  async function loadKillmails (params, start = params.start, totalPages = 0) {
-    const data = await fetchPages(Object.assign(params, { start, totalPages }));
-    if (data.length !== 0 && data.length === 200 * 10) {
-      const lastKillmail = data[data.length - 1];
-      const killmails = await loadKillmails(params, lastKillmail.killmail_time.replace(/:|-| |T/g,'').substring(0, 10) + "00", totalPages + 10);
-      const lastKillIndex = killmails.findIndex(({ killmail_id }) => killmail_id === lastKillmail.killmail_id);
-      return data.concat(killmails.slice(lastKillIndex + 1));
-    } else {
-      return data;
-    }
+const loadKillmails = async (params, start = params.start, totalPages = 0) => {
+  const data = await fetchPages(Object.assign(params, { start, totalPages }));
+  if (data.length !== 0 && data.length === 200 * 10) {
+    const lastKillmail = data[data.length - 1];
+    const killmails = await loadKillmails(params, lastKillmail.killmail_time.replace(/:|-| |T/g,'').substring(0, 10) + "00", totalPages + 10);
+    const lastKillIndex = killmails.findIndex(({ killmail_id }) => killmail_id === lastKillmail.killmail_id);
+    return data.concat(killmails.slice(lastKillIndex + 1));
+  } else {
+    return data;
   }
+};
 
-  async function fetchPages (params, page = 1) {
-    const data = await json(url(Object.assign(params, { page })));
-    if (page !== 10 && data.length === 200)
-      return data.concat(await fetchPages(params, ++page));
-    else
-      return data;
-  }
+const fetchPages = async (params, page = 1) => {
+  const data = await json(url(Object.assign(params, { page })));
+  if (page !== 10 && data.length === 200)
+    return data.concat(await fetchPages(params, ++page));
+  else
+    return data;
+};
 
-  function url ({ type, id, start, end, page }) {
-    return`https://zkillboard.com/api/kills/${type == "system" ? "solarSystemID" : "bla"}/${id}/startTime/${start}/endTime/${end}/page/${page}/`;
-  }
+const url = ({ type, id, start, end, page }) => `https://zkillboard.com/api/kills/${type == "system" ? "solarSystemID" : "bla"}/${id}/startTime/${start}/endTime/${end}/page/${page}/`;
 
-  function json (...args) {
-    return fetch(...args).then(res => res.json());
-  }
+const json = (...args) => fetch(...args).then(res => res.json());
 
-  function getTeams (killmails) {
-    return [...new Set([].concat(...killmails
-      .map(({ victim, attackers}) => []
-        .concat(...attackers.map(attacker => attacker.alliance_id || attacker.corporation_id || []))
-        .concat(victim.alliance_id || victim.corporation_id || [])
-      )))
-    ];
-  }
+const getTeams = killmails => [...new Set([].concat(...killmails
+  .map(({ victim, attackers}) => []
+    .concat(...attackers.map(attacker => attacker.alliance_id || attacker.corporation_id || []))
+    .concat(victim.alliance_id || victim.corporation_id || [])
+  )))
+];
 
-  function getPlayers (killmails) {
-    return [...new Set([].concat(...killmails
-      .map(({ victim, attackers}) => []
-        .concat(...attackers.map(attacker => attacker.character_id || []))
-        .concat(victim.character_id || [])
-      )))
-    ];
-  }
+const getPlayers = killmails => [...new Set([].concat(...killmails
+  .map(({ victim, attackers}) => []
+    .concat(...attackers.map(attacker => attacker.character_id || []))
+    .concat(victim.character_id || [])
+  )))
+];
 
 ////////// HANDLERS //////////
 
