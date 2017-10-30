@@ -82,7 +82,7 @@ const stateReducer = (state = initialState, action) => {
 
 ////////// METHODS //////////
 
-const load = sources => [].concat(...(await Promise.all(sources.map(source => loadSource(source)))));
+const load = async (sources) => [].concat(...(await Promise.all(sources.map(source => loadSource(source)))));
 
 const loadSource = ({ type, value, start, end }) => loadKillmails({ type, id: value, start: start.replace(/-|:|T/g, "").slice(0, 10) + "00", end: end.replace(/-|:|T/g, "").slice(0, 10) + "00" });
 
