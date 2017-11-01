@@ -1,5 +1,5 @@
 <div>
-  <div>
+  <div id="sources">
     <button ref="{{ addSourceButton }}">+</button>
     <button ref="{{ analyzeButton }}">Analyze</button>
     {% for source in sources %}
@@ -16,13 +16,30 @@
       </div>
     {% endfor %}
   </div>
-  <div>
+  <div id="teams">
     {% for team in teams %}
-      <ul>
+      <div>
         {% for team_member in team %}
-          <li data-key="{{ team_member }}"><button ref="{{ moveTeamLeftButton }}">&lt;</button>{{ team_member }}<button ref="{{ moveTeamRightButton }}">&gt;</button></li>
+          <div data-key="{{ team_member }}">
+            <button class="moveTeamLeft" ref="{{ moveTeamLeftButton }}">&lt;</button>
+            <span>{{ idToName[team_member] }}</span>
+            <button class="moveTeamRight" ref="{{ moveTeamRightButton }}">&gt;</button>
+          </div>
         {% endfor %}
-      </ul>
+      </div>
+    {% endfor %}
+  </div>
+  <div id="players">
+    {% for team in teams %}
+      <div>
+        {% for team_member in team %}
+          {% for player in players %}
+            {% if player.alliance_id == team_member or player.alliance_id == team_member %}
+              <div data-key="{{ player.character_id }}">{{ idToName[player.character_id] }}</div>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </div>
     {% endfor %}
   </div>
 </div>

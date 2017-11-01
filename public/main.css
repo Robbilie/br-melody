@@ -1,5 +1,5 @@
 body {
-  background-color: #424383;
+  //background-color: #424383;
 }
 
 .home {
@@ -19,4 +19,26 @@ body {
 .counter h3 {
   margin: 0;
   padding: 10px 0;
+}
+
+#sources, #teams, #teams > div, #players, #players > div {
+	border: 2px solid black;
+	width: 100%;
+}
+
+#teams, #players {
+	display: flex;
+}
+
+.moveTeamLeft {
+	float: left;
+	clear: both;
+}
+
+.moveTeamLeft + span {
+    float: left;
+}
+
+.moveTeamRight {
+	float: right;
 }
