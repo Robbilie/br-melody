@@ -3,7 +3,7 @@
     <button ref="{{ addSourceButton }}">+</button>
     <button ref="{{ analyzeButton }}">Analyze</button>
     {% for source in sources %}
-      <div data-key="{{ source.index }}">
+      <div key="{{ source.index }}" data-key="{{ source.index }}">
         <select ref="{{ sourceAttribute }}" data-name="type" value="{{ source.type }}">
           <option value="system">System</option>
           <option value="constellation">Constellation</option>
@@ -18,9 +18,9 @@
   </div>
   <div id="teams">
     {% for team in teams %}
-      <div>
+      <div class="team" key="{{ loop.index }}">
         {% for team_member in team %}
-          <div data-key="{{ team_member }}">
+          <div class="team_member" key="{{ team_member }}" data-key="{{ team_member }}">
             <button class="moveTeamLeft" ref="{{ moveTeamLeftButton }}">&lt;</button>
             <span>{{ idToName[team_member] }}</span>
             <button class="moveTeamRight" ref="{{ moveTeamRightButton }}">&gt;</button>
@@ -31,11 +31,11 @@
   </div>
   <div id="players">
     {% for team in teams %}
-      <div>
+      <div class="team" key="{{ loop.index }}">
         {% for team_member in team %}
           {% for player in players %}
             {% if player.alliance_id == team_member or player.alliance_id == team_member %}
-              <div data-key="{{ player.character_id }}">{{ idToName[player.character_id] }}</div>
+              <div class="player" key="{{ player.character_id }}" data-key="{{ player.character_id }}">{{ idToName[player.character_id] }}</div>
             {% endif %}
           {% endfor %}
         {% endfor %}

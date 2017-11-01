@@ -21,7 +21,7 @@ body {
   padding: 10px 0;
 }
 
-#sources, #teams, #teams > div, #players, #players > div {
+#sources, #teams, .team, #players, .player {
 	border: 2px solid black;
 	width: 100%;
 }

@@ -80,6 +80,8 @@ const stateReducer = (state = initialState, action) => {
       if (!teams[newIndex])
         teams[newIndex] = [];
       teams[newIndex].push(action.payload.id);
+      while (teams.slice(-1)[0].length === 0)
+        teams.pop();
       return {
         ...state,
         teams
@@ -97,10 +99,6 @@ const loadSource = ({ type, value, start, end }) => loadKillmails({ type, id: va
 const loadKillmails = async (params, start = params.start, totalPages = 0) => {
   const data = await fetchPages(Object.assign(params, { start, totalPages }));
   if (data.length !== 0 && data.length === 200 * 10) {
-    //const lastKillmail = data.slice(-1)[0];
-    //const killmails = await loadKillmails(params, lastKillmail.killmail_time.replace(/:|-| |T/g,'').substring(0, 10) + "00", totalPages + 10);
-    //const lastKillIndex = killmails.findIndex(({ killmail_id }) => killmail_id === lastKillmail.killmail_id);
-    //return data.concat(killmails.slice(lastKillIndex + 1));
     return data.concat(await loadKillmails(params, data.slice(-1)[0].killmail_time.replace(/:|-| |T/g,'').substring(0, 10) + "00", totalPages + 10));
   } else {
     return data;
@@ -108,11 +106,12 @@ const loadKillmails = async (params, start = params.start, totalPages = 0) => {
 };
 
 const fetchPages = async (params, page = 1) => {
-  const data = await json(url(Object.assign(params, { page })));
-  if (page !== 10 && data.length === 200)
-    return data.concat(await fetchPages(params, ++page));
-  else
-    return data;
+  return [].concat(...(await Promise.all(new Array(10).fill(0).map((x, i) => json(url(Object.assign(params, { page: i + 1 })))))));
+  //const data = await json(url(Object.assign(params, { page })));
+  //if (page !== 10 && data.length === 200)
+  //  return data.concat(await fetchPages(params, ++page));
+  //else
+  //  return data;
 };
 
 const url = ({ type, id, start, end, page }) => `https://zkillboard.com/api/kills/${type == "system" ? "solarSystemID" : "bla"}/${id}/startTime/${start}/endTime/${end}/page/${page}/`;
@@ -126,10 +125,6 @@ const getTeams = killmails => [...new Set([].concat(...killmails
   )))
 ];
 
-//const getPlayers = killmails => [...new Set([].concat(...killmails
-  //.map(({ victim, attackers }) => []
-    //.concat(...attackers.map(attacker => attacker.character_id || []))
-    //.concat(victim.character_id || [])
 const getPlayers = killmails => [...new Map([].concat(...killmails
   .map(({ victim: { character_id, corporation_id, alliance_id }, attackers }) => []
     .concat(...attackers.map(({ character_id, corporation_id, alliance_id }) => character_id ? { character_id, corporation_id, alliance_id } : []))
